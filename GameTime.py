@@ -41,9 +41,9 @@ InjuryFields = [ "Player", "Date", "Status", "Injury" ]
 TeamNames = ["Penguins", "Devils", "Rangers", "Islanders", "Flyers", "Blackhawks", "RedWings", "Blues", "BlueJackets", "Predators", "Canadiens", "Bruins", "Senators", "MapleLeafs", "Sabres", "Canucks", "Wild", "Oilers", "Flames", "Avalanche", "Ducks", "Kings", "Stars", "Sharks", "Coyotes", "Jets", "Hurricanes", "Capitals", "Lightning", "Panthers"]
 TeamCities = [u"Pittsburgh", u"New Jersey", u"NY Rangers", u"NY Islanders", u"Philadelphia", u"Chicago", u"Detroit", u"St. Louis", u"Columbus", u"Nashville", u"Montréal", u"Boston", u"Ottawa", u"Toronto", u"Buffalo", u"Vancouver", u"Minnesota", u"Edmonton", u"Calgary", u"Colorado", u"Anaheim", u"Los Angeles", u"Dallas", u"San Jose", u"Arizona", u"Winnipeg", u"Carolina", u"Washington", u"Tampa Bay", u"Florida"]
 TeamLong = ["Pittsburgh Penguins", "New Jersey Devils", "New York Rangers", "New York Islanders", "Philadelphia Flyers", "Chicago Blackhawks", "Detroit Red Wings", "St. Louis Blues", "Columbus Blue Jackets", "Nashville Predators", "Montreal Canadiens", "Boston Bruins", "Ottawa Senators", "Toronto Maple Leafs", "Buffalo Sabres", "Vancouver Canucks", "Minnesota Wild", "Edmonton Oilers", "Calgary Flames", "Colorado Avalanche", "Anaheim Ducks", "Los Angeles Kings", "Dallas Stars", "San Jose Sharks", "Arizona Coyotes", "Winnipeg Jets", "Carolina Hurricanes", "Washington Capitals", "Tampa Bay Lightning", "Florida Panthers"]
-TeamNamesAbbr = ["PIT", "NJD", "NYR", "NYI", "PHI", "CHI", "DET", "STL", "CBJ", "NSH", "MON", "BOS", "OTT", "TOR", "BUF", "VAN", "MIN", "EDM", "CGY", "COL", "ANA", "LOS", "DAL", "SJS", "PHO", "WPG", "CAR", "WSH", "TBL", "FLA"]
+TeamNamesAbbr = ["PIT", "NJD", "NYR", "NYI", "PHI", "CHI", "DET", "STL", "CBJ", "NSH", "MTL", "BOS", "OTT", "TOR", "BUF", "VAN", "MIN", "EDM", "CGY", "COL", "ANA", "LAK", "DAL", "SJS", "ARI", "WPG", "CAR", "WSH", "TBL", "FLA"]
 TeamReddits = ["/r/penguins", "/r/devils", "/r/rangers", "/r/newyorkislanders", "/r/flyers", "/r/hawks", "/r/detroitredwings", "/r/stlouisblues", "/r/bluejackets", "/r/predators", "/r/habs", "/r/bostonbruins", "/r/ottawasenators", "/r/leafs", "/r/sabres", "/r/canucks", "/r/wildhockey", "/r/edmontonoilers", "/r/calgaryflames", "/r/coloradoavalanche", "/r/anaheimducks", "/r/losangeleskings", "/r/dallasstars", "/r/sanjosesharks", "/r/coyotes", "/r/winnipegjets", "/r/canes", "/r/caps", "/r/tampabaylightning", "/r/floridapanthers"]
-TeamArenas = ["Consol Energy Center", "Prudential Center", "Madison Square Garden", "Nassau Veterans Memorial Coliseum", "Wells Fargo Center", "United Center", "Joe Louis Arena", "Scottrade Center", "Nationwide Arena", "Bridgestone Arena", "Bell Centre", "TD Garden", "Canadian Tire Centre", "Air Canada Centre", "First Niagara Center", "Rogers Arena", "Xcel Energy Center", "Rexall Place", "Scotiabank Saddledome", "Pepsi Center", "Honda Center", "Staples Center", "American Airlines Center", "SAP Center", "Jobing.com Arena", "MTS Centre", "PNC Arena", "Verizon Center", "Tampa Bay Times Forum", "BB&T Center"]
+TeamArenas = ["Consol Energy Center", "Prudential Center", "Madison Square Garden", "Nassau Veterans Memorial Coliseum", "Wells Fargo Center", "United Center", "Joe Louis Arena", "Scottrade Center", "Nationwide Arena", "Bridgestone Arena", "Bell Centre", "TD Garden", "Canadian Tire Centre", "Air Canada Centre", "First Niagara Center", "Rogers Arena", "Xcel Energy Center", "Rexall Place", "Scotiabank Saddledome", "Pepsi Center", "Honda Center", "Staples Center", "American Airlines Center", "SAP Center", "Gila River Arena", "MTS Centre", "PNC Arena", "Verizon Center", "Amalie Arena", "BB&T Center"]
 TeamArenaPlace = ["Pittsburgh, PA, USA", "Newark, NJ, USA", "New York, NY, USA", "Long Island, NY, USA", "Philadelphia, PA, USA", "Chicago, IL, USA", "Detroit, MI, USA", "St Louis, MO, USA", "Columbus, OH, USA", "Nashville, TN, USA", "Montreal, QC, CAN", "Boston, MA, USA", "Ottawa, ON, CAN", "Toronto, ON, CAN", "Buffalo, NY, USA", "Vancouver, BC, CAN", "St Paul, MN, USA", "Edmonton, AB, CAN", "Calgary, AB, CAN", "Denver, CO, USA", "Anaheim, CA, USA", "Los Angeles, CA, USA", "Dallas, TX, USA", "San Jose, CA, USA", "Glendale, AZ, USA", "Winnipeg, MB, CAN", "Raleigh, NC, USA", "Washington, DC, USA", "Tampa, FL, USA", "Sunrise, FL, USA"]
 TeamTimeZone = ["ET", "ET", "ET", "ET", "ET", "CT", "ET", "CT", "ET", "CT", "ET", "ET", "ET", "ET", "ET", "PT", "CT", "MT", "MT", "MT", "PT", "PT", "CT", "PT", "MT", "CT", "ET", "ET", "ET", "ET"]
 TeamNHL = ["Pittsburgh", "New Jersey", "NY Rangers", "NY Islanders", "Philadelphia", "Chicago", "Detroit", "St Louis", "Columbus", "Nashville", "Montreal", "Boston", "Ottawa", "Toronto", "Buffalo", "Vancouver", "Minnesota", "Edmonton", "Calgary", "Colorado", "Anaheim", "Los Angeles", "Dallas", "San Jose", "Arizona", "Winnipeg", "Carolina", "Washington", "Tampa Bay", "Florida"]
@@ -62,11 +62,14 @@ team_goalies = {}
 team_injuries = {}
 today_games = []
 GT_Settings = {}
+lineups_forwards = {}
+lineups_defense = {}
+lineups_goalies = {}
 by_city = {}
 by_abbr = {}
 by_nhl = {}
 by_tsn = {}
-
+by_team = {}
 
 ## --------------------------------------------------------------------------------------
 ## Global Functions
@@ -82,7 +85,19 @@ def build_arrays():
             "location"  : TeamArenaPlace[x],
             "abbr"      : TeamNamesAbbr[x],
             "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x]
+            "tz"        : TeamTimeZone[x],
+            "lineup"    : TeamLineUpURL[x]
+            }
+
+        by_team[TeamNames[x]] = {
+            "city"      : TeamCities[x],
+            "long"      : TeamLong[x],
+            "arena"     : TeamArenas[x],
+            "location"  : TeamArenaPlace[x],
+            "abbr"      : TeamNamesAbbr[x],
+            "reddit"    : TeamReddits[x],
+            "tz"        : TeamTimeZone[x],
+            "lineup"    : TeamLineUpURL[x]
             }
 
         by_abbr[TeamNamesAbbr[x]] = {
@@ -92,7 +107,8 @@ def build_arrays():
             "arena"     : TeamArenas[x],
             "location"  : TeamArenaPlace[x],
             "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x]
+            "tz"        : TeamTimeZone[x],
+            "lineup"    : TeamLineUpURL[x]
             }
 
         by_nhl[TeamNHL[x]] = {
@@ -103,7 +119,8 @@ def build_arrays():
             "arena"     : TeamArenas[x],
             "location"  : TeamArenaPlace[x],
             "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x]
+            "tz"        : TeamTimeZone[x],
+            "lineup"    : TeamLineUpURL[x]
             }
 
         by_tsn[TeamTSN[x]] = {
@@ -114,7 +131,8 @@ def build_arrays():
             "arena"     : TeamArenas[x],
             "location"  : TeamArenaPlace[x],
             "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x]
+            "tz"        : TeamTimeZone[x],
+            "lineup"    : TeamLineUpURL[x]
             }
 
 ## --------------------------------------------------------------------------------------
@@ -301,8 +319,52 @@ def get_today_schedule():
                                     "local_time" : local_time,
                                     "network" : network
                                     })
+
+## --------------------------------------------------------------------------------------
+## Check file dates
+## --------------------------------------------------------------------------------------
+def get_team_lines(team_name):
+    lines_file = cache_directory + "\\" + team_name + "-lines.html"
+    if os.path.exists(lines_file):
+        print "Reading cached team file for " + team_name + "...\r"
+        cache_file = open(lines_file, "r")
+        page = cache_file.read()
+        cache_file.close()
     else:
-        print "\r\nNo games today.\r"
+        print "Downloading players for " + team_name + "...\r"
+        w = urllib2.urlopen(TeamLineUpBaseURL + by_team[team_name]['lineup'])
+        page = w.read()
+        w.close()
+
+        cache_file = open(lines_file, "w")
+        cache_file.write(page)
+        cache_file.close()
+
+    soup = BeautifulSoup(page)
+
+    player_list = soup.find_all('table', { 'class' : 'playerlist' })
+
+    forwards = []
+    defense = []
+    goalies = []
+
+    ## Forwards
+    for tr in player_list[0].find_all('tr'):
+        forwards.append([td.text.replace('\n','') for td in tr.find_all('td') if len(td)])
+
+    for tr in player_list[1].find_all('tr'):
+        if not tr.find('th'):
+            defense.append([td.text.replace('\n','') for td in tr.find_all('td') if len(td)])
+
+    for tr in player_list[4].find_all('tr'):
+        if not tr.find('th'):
+            for td in tr.find_all('td'):
+                goalies.append(td.text.replace('\n',''))
+
+    lineups_forwards[team_name] = forwards
+    lineups_defense[team_name] = defense
+    lineups_goalies[team_name] = goalies
+
 
 ## --------------------------------------------------------------------------------------
 ## Check file dates
@@ -347,14 +409,53 @@ def check_filedates():
         t2 = os.path.getmtime(InjuriesFile)
         if ((time.mktime(t1) - t2) / 60) > 60:
             os.remove(InjuriesFile)
-            print "Deleting injuries file...\r"
+            print "Deleting injuries file..."
         elif debug == 1:
             print "Injuries file life in minutes: " + str((time.mktime(t1) - t2) / 60) + "\r"
+
+    for x in range(30):
+        file_check = '%s\%s-lines.html' % (cache_directory,TeamNames[x])
+        if os.path.exists(file_check):
+            t2 = os.path.getmtime(file_check)
+            if ((time.mktime(t1) - t2) / 60) > 60:
+                os.remove(file_check)
+                print "Deleting %s lines file..." % (TeamNames[x])
+            elif debug == 1:
+                print "%s lines file life in minutes: %d" % (TeamNames[x],(time.mktime(t1) - t2) / 60)
+        
+
+## --------------------------------------------------------------------------------------
+## List files in a folder
+## --------------------------------------------------------------------------------------
+def ListFiles(sPath,sExt):
+    # returns a list of names (with extension, without full path) of all files 
+    # in folder sPath
+    lsFiles = []
+    for sName in os.listdir(sPath):
+        if os.path.isfile(os.path.join(sPath, sName)) and sName[0-(len(sExt)):].lower() == sExt.lower():
+            lsFiles.append(sName)
+    return lsFiles
+
+
+## --------------------------------------------------------------------------------------
+## Build Thread File
+## --------------------------------------------------------------------------------------
+def build_game_thread():
+    print 'Hi'
 
 
 ## --------------------------------------------------------------------------------------
 ## Mainline code
 ## --------------------------------------------------------------------------------------
+
+def build_table():
+    for city in by_city:
+        print "\r\n|Field|Data|"
+        print ":--:|:--:"
+        print "|City|" + city + "|"
+        for item in by_city[city]:
+            print "|" + item + "|" + by_city[city][item] + "|"
+
 
 print "GameTimePy v1.0.14.1\r"
 print "by sentry07 (/r/GameTime)\r\n"
@@ -376,9 +477,18 @@ if not os.path.exists(output_directory):
     os.makedirs(output_directory)
     
 build_arrays()
-check_filedates()
+# check_filedates()
 get_team_stats()
 get_today_schedule()
+
+print "\r\n"
+print "Select template file to use:"
+TemplateFiles = ListFiles(this_directory,'txt')
+for file in range(len(TemplateFiles)):
+    print "[%d] %s" % (file,TemplateFiles[file])
+template_num = int(raw_input("> "))
+if template_num <= len(TemplateFiles):
+    print "Using %s for game thread." % (TemplateFiles[template_num])
 
 if game_count > 0:
     print "\r\nToday's games:\r"
@@ -389,3 +499,5 @@ if game_count > 0:
 
     if game_num <= game_count and game_num > 0:
         print "Please wait...\r"
+else:
+    print "\r\nNo games today.\r"
