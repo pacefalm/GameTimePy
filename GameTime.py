@@ -12,42 +12,470 @@ import urllib2
 
 debug = 0
 
-## --------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------
 ## Global Constants
-## --------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------
 CheckBaseURL = "https://dl.dropboxusercontent.com/u/5739973/NHL/Builds/"
 CheckVerURL = "checkverpy.txt"
 
 TeamLineUpBaseURL = "http://www2.dailyfaceoff.com/teams/lines/"
-TeamLineUpURL = ["36/pittsburgh-penguins", "30/new-jersey-devils", "32/new-york-rangers", "31/new-york-islanders", "34/philadelphia-flyers", "19/chicago-blackhawks", "23/detroit-red-wings", "38/st-louis-blues", "21/columbus-blue-jackets", "29/nashville-predators", "28/montreal-canadiens", "15/boston-bruins/", "33/ottawa-senators", "40/toronto-maple-leafs", "16/buffalo-sabres/", "41/vancouver-canucks", "27/minnesota-wild", "24/edmonton-oilers", "17/calgary-flames", "20/colorado-avalanche", "13/anaheim-ducks/", "26/los-angeles-kings", "22/dallas-stars", "37/san-jose-sharks", "35/arizona-coyotes", "14/winnipeg-jets", "18/carolina-hurricanes", "42/washington-capitals", "39/tampa-bay-lightning", "25/florida-panthers"]
+
 
 TeamStatCount = 25
-TeamStats = ["Rank","GP","W","L","OT","P","ROW","HROW","RROW","P%","G/G","GA/G","5-5 F/A","PP%","PK%","S/G","SA/G","Sc 1%","Tr 1st%","Ld 1%","Ld 2%","OS%","OSB%","FO%"]
+TeamStats = ["Rank","GP","W","L","OT","P","ROW","HROW","RROW","P%","G/G",
+	"GA/G","5-5 F/A","PP%","PK%","S/G","SA/G","Sc 1%","Tr 1st%","Ld 1%",
+	"Ld 2%","OS%","OSB%","FO%"]
 
 PlayerStatCount = 14
-PlayerStats = ["Num", "Pos", "Name", "GP", "G", "A", "P", "+/-", "PIM", "PP", "SH", "GW", "S", "S%"]
+PlayerStats = ["Num", "Pos", "Name", "GP", "G", "A", "P", "+/-", "PIM",
+	"PP", "SH", "GW", "S", "S%"]
 
 GoalieStatCount = 16
-GoalieStats = ["Num", "Name", "GPI", "GS", "Min", "GAA", "W", "L", "OT", "SO", "SA", "GA", "SV%", "G", "A", "PIM"]
+GoalieStats = ["Num", "Name", "GPI", "GS", "Min", "GAA", "W", "L", "OT", "SO",
+	"SA", "GA", "SV%", "G", "A", "PIM"]
 
 SpecialFields = ["nameabbr", "redditname", "redditicon", "redditabbr"]
 
-TableHeader = [":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:"]
+TableHeader = [":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:",
+	":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:", ":--:",
+	":--:", ":--:", ":--:", ":--:", ":--:", ":--:"]
 
 InjuryURL = "http://www.tsn.ca/nhl/injuries/"
 InjuryFields = [ "Player", "Date", "Status", "Injury" ]
 
+"""
+TeamNames = ["Penguins", "Devils", "Rangers", "Islanders", "Flyers",
+	"Blackhawks", "RedWings", "Blues", "BlueJackets", "Predators", "Canadiens",
+	"Bruins", "Senators", "MapleLeafs", "Sabres", "Canucks", "Wild", "Oilers",
+	"Flames", "Avalanche", "Ducks", "Kings", "Stars", "Sharks", "Coyotes", "Jets",
+	"Hurricanes", "Capitals", "Lightning", "Panthers"]
+TeamCities = [u"Pittsburgh", u"New Jersey", u"NY Rangers", u"NY Islanders",
+	u"Philadelphia", u"Chicago", u"Detroit", u"St. Louis", u"Columbus",
+	u"Nashville", u"Montréal", u"Boston", u"Ottawa", u"Toronto", u"Buffalo",
+	u"Vancouver", u"Minnesota", u"Edmonton", u"Calgary", u"Colorado",
+	u"Anaheim", u"Los Angeles", u"Dallas", u"San Jose", u"Arizona",
+	u"Winnipeg", u"Carolina", u"Washington", u"Tampa Bay", u"Florida"]
+TeamLong = ["Pittsburgh Penguins", "New Jersey Devils", "New York Rangers",
+	"New York Islanders", "Philadelphia Flyers", "Chicago Blackhawks",
+	"Detroit Red Wings", "St. Louis Blues", "Columbus Blue Jackets",
+	"Nashville Predators", "Montreal Canadiens", "Boston Bruins",
+	"Ottawa Senators", "Toronto Maple Leafs", "Buffalo Sabres",
+	"Vancouver Canucks", "Minnesota Wild", "Edmonton Oilers",
+	"Calgary Flames", "Colorado Avalanche", "Anaheim Ducks",
+	"Los Angeles Kings", "Dallas Stars", "San Jose Sharks", "Arizona Coyotes",
+	"Winnipeg Jets", "Carolina Hurricanes", "Washington Capitals",
+	"Tampa Bay Lightning", "Florida Panthers"]
+TeamNamesAbbr = ["PIT", "NJD", "NYR", "NYI", "PHI", "CHI", "DET", "STL",
+	"CBJ", "NSH", "MTL", "BOS", "OTT", "TOR", "BUF", "VAN", "MIN", "EDM", "CGY",
+	"COL", "ANA", "LAK", "DAL", "SJS", "ARI", "WPG", "CAR", "WSH", "TBL", "FLA"]
+TeamReddits = ["/r/penguins", "/r/devils", "/r/rangers", "/r/newyorkislanders",
+	"/r/flyers", "/r/hawks", "/r/detroitredwings", "/r/stlouisblues",
+	"/r/bluejackets", "/r/predators", "/r/habs", "/r/bostonbruins",
+	"/r/ottawasenators", "/r/leafs", "/r/sabres", "/r/canucks",
+	"/r/wildhockey", "/r/edmontonoilers", "/r/calgaryflames",
+	"/r/coloradoavalanche", "/r/anaheimducks", "/r/losangeleskings",
+	"/r/dallasstars", "/r/sanjosesharks", "/r/coyotes", "/r/winnipegjets",
+	"/r/canes", "/r/caps", "/r/tampabaylightning", "/r/floridapanthers"]
+TeamArenas = ["Consol Energy Center", "Prudential Center",
+	"Madison Square Garden", "Nassau Veterans Memorial Coliseum",
+	"Wells Fargo Center", "United Center", "Joe Louis Arena",
+	"Scottrade Center", "Nationwide Arena", "Bridgestone Arena", "Bell Centre",
+	"TD Garden", "Canadian Tire Centre", "Air Canada Centre",
+	"First Niagara Center", "Rogers Arena", "Xcel Energy Center",
+	"Rexall Place", "Scotiabank Saddledome", "Pepsi Center", "Honda Center",
+	"Staples Center", "American Airlines Center", "SAP Center",
+	"Gila River Arena", "MTS Centre", "PNC Arena", "Verizon Center",
+	"Amalie Arena", "BB&T Center"]
+TeamArenaPlace = ["Pittsburgh, PA, USA", "Newark, NJ, USA",
+	"New York, NY, USA", "Long Island, NY, USA", "Philadelphia, PA, USA",
+	"Chicago, IL, USA", "Detroit, MI, USA", "St Louis, MO, USA",
+	"Columbus, OH, USA", "Nashville, TN, USA", "Montreal, QC, CAN",
+	"Boston, MA, USA", "Ottawa, ON, CAN", "Toronto, ON, CAN",
+	"Buffalo, NY, USA", "Vancouver, BC, CAN", "St Paul, MN, USA",
+	"Edmonton, AB, CAN", "Calgary, AB, CAN", "Denver, CO, USA",
+	"Anaheim, CA, USA", "Los Angeles, CA, USA", "Dallas, TX, USA",
+	"San Jose, CA, USA", "Glendale, AZ, USA", "Winnipeg, MB, CAN",
+	"Raleigh, NC, USA", "Washington, DC, USA", "Tampa, FL, USA",
+	"Sunrise, FL, USA"]
+TeamTimeZone = ["ET", "ET", "ET", "ET", "ET", "CT", "ET", "CT", "ET", "CT",
+	"ET", "ET", "ET", "ET", "ET", "PT", "CT", "MT", "MT", "MT", "PT", "PT",
+	"CT", "PT", "MT", "CT", "ET", "ET", "ET", "ET"]
+TeamNHL = ["Pittsburgh", "New Jersey", "NY Rangers", "NY Islanders",
+	"Philadelphia", "Chicago", "Detroit", "St Louis", "Columbus", "Nashville",
+	"Montreal", "Boston", "Ottawa", "Toronto", "Buffalo", "Vancouver",
+	"Minnesota", "Edmonton", "Calgary", "Colorado", "Anaheim", "Los Angeles",
+	"Dallas", "San Jose", "Arizona", "Winnipeg", "Carolina", "Washington",
+	"Tampa Bay", "Florida"]
+TeamTSN = ["Pittsburgh", "New Jersey", "NY Rangers", "NY Islanders",
+	"Philadelphia", "Chicago", "Detroit", "St. Louis", "Columbus", "Nashville",
+	"Montreal", "Boston", "Ottawa", "Toronto", "Buffalo", "Vancouver",
+	"Minnesota", "Edmonton", "Calgary", "Colorado", "Anaheim", "Los Angeles",
+	"Dallas", "San Jose", "Arizona", "Winnipeg", "Carolina", "Washington",
+	"Tampa Bay", "Florida"]
+"""
 
-TeamNames = ["Penguins", "Devils", "Rangers", "Islanders", "Flyers", "Blackhawks", "RedWings", "Blues", "BlueJackets", "Predators", "Canadiens", "Bruins", "Senators", "MapleLeafs", "Sabres", "Canucks", "Wild", "Oilers", "Flames", "Avalanche", "Ducks", "Kings", "Stars", "Sharks", "Coyotes", "Jets", "Hurricanes", "Capitals", "Lightning", "Panthers"]
-TeamCities = [u"Pittsburgh", u"New Jersey", u"NY Rangers", u"NY Islanders", u"Philadelphia", u"Chicago", u"Detroit", u"St. Louis", u"Columbus", u"Nashville", u"Montréal", u"Boston", u"Ottawa", u"Toronto", u"Buffalo", u"Vancouver", u"Minnesota", u"Edmonton", u"Calgary", u"Colorado", u"Anaheim", u"Los Angeles", u"Dallas", u"San Jose", u"Arizona", u"Winnipeg", u"Carolina", u"Washington", u"Tampa Bay", u"Florida"]
-TeamLong = ["Pittsburgh Penguins", "New Jersey Devils", "New York Rangers", "New York Islanders", "Philadelphia Flyers", "Chicago Blackhawks", "Detroit Red Wings", "St. Louis Blues", "Columbus Blue Jackets", "Nashville Predators", "Montreal Canadiens", "Boston Bruins", "Ottawa Senators", "Toronto Maple Leafs", "Buffalo Sabres", "Vancouver Canucks", "Minnesota Wild", "Edmonton Oilers", "Calgary Flames", "Colorado Avalanche", "Anaheim Ducks", "Los Angeles Kings", "Dallas Stars", "San Jose Sharks", "Arizona Coyotes", "Winnipeg Jets", "Carolina Hurricanes", "Washington Capitals", "Tampa Bay Lightning", "Florida Panthers"]
-TeamNamesAbbr = ["PIT", "NJD", "NYR", "NYI", "PHI", "CHI", "DET", "STL", "CBJ", "NSH", "MTL", "BOS", "OTT", "TOR", "BUF", "VAN", "MIN", "EDM", "CGY", "COL", "ANA", "LAK", "DAL", "SJS", "ARI", "WPG", "CAR", "WSH", "TBL", "FLA"]
-TeamReddits = ["/r/penguins", "/r/devils", "/r/rangers", "/r/newyorkislanders", "/r/flyers", "/r/hawks", "/r/detroitredwings", "/r/stlouisblues", "/r/bluejackets", "/r/predators", "/r/habs", "/r/bostonbruins", "/r/ottawasenators", "/r/leafs", "/r/sabres", "/r/canucks", "/r/wildhockey", "/r/edmontonoilers", "/r/calgaryflames", "/r/coloradoavalanche", "/r/anaheimducks", "/r/losangeleskings", "/r/dallasstars", "/r/sanjosesharks", "/r/coyotes", "/r/winnipegjets", "/r/canes", "/r/caps", "/r/tampabaylightning", "/r/floridapanthers"]
-TeamArenas = ["Consol Energy Center", "Prudential Center", "Madison Square Garden", "Nassau Veterans Memorial Coliseum", "Wells Fargo Center", "United Center", "Joe Louis Arena", "Scottrade Center", "Nationwide Arena", "Bridgestone Arena", "Bell Centre", "TD Garden", "Canadian Tire Centre", "Air Canada Centre", "First Niagara Center", "Rogers Arena", "Xcel Energy Center", "Rexall Place", "Scotiabank Saddledome", "Pepsi Center", "Honda Center", "Staples Center", "American Airlines Center", "SAP Center", "Gila River Arena", "MTS Centre", "PNC Arena", "Verizon Center", "Amalie Arena", "BB&T Center"]
-TeamArenaPlace = ["Pittsburgh, PA, USA", "Newark, NJ, USA", "New York, NY, USA", "Long Island, NY, USA", "Philadelphia, PA, USA", "Chicago, IL, USA", "Detroit, MI, USA", "St Louis, MO, USA", "Columbus, OH, USA", "Nashville, TN, USA", "Montreal, QC, CAN", "Boston, MA, USA", "Ottawa, ON, CAN", "Toronto, ON, CAN", "Buffalo, NY, USA", "Vancouver, BC, CAN", "St Paul, MN, USA", "Edmonton, AB, CAN", "Calgary, AB, CAN", "Denver, CO, USA", "Anaheim, CA, USA", "Los Angeles, CA, USA", "Dallas, TX, USA", "San Jose, CA, USA", "Glendale, AZ, USA", "Winnipeg, MB, CAN", "Raleigh, NC, USA", "Washington, DC, USA", "Tampa, FL, USA", "Sunrise, FL, USA"]
-TeamTimeZone = ["ET", "ET", "ET", "ET", "ET", "CT", "ET", "CT", "ET", "CT", "ET", "ET", "ET", "ET", "ET", "PT", "CT", "MT", "MT", "MT", "PT", "PT", "CT", "PT", "MT", "CT", "ET", "ET", "ET", "ET"]
-TeamNHL = ["Pittsburgh", "New Jersey", "NY Rangers", "NY Islanders", "Philadelphia", "Chicago", "Detroit", "St Louis", "Columbus", "Nashville", "Montreal", "Boston", "Ottawa", "Toronto", "Buffalo", "Vancouver", "Minnesota", "Edmonton", "Calgary", "Colorado", "Anaheim", "Los Angeles", "Dallas", "San Jose", "Arizona", "Winnipeg", "Carolina", "Washington", "Tampa Bay", "Florida"]
-TeamTSN = ["Pittsburgh", "New Jersey", "NY Rangers", "NY Islanders", "Philadelphia", "Chicago", "Detroit", "St. Louis", "Columbus", "Nashville", "Montreal", "Boston", "Ottawa", "Toronto", "Buffalo", "Vancouver", "Minnesota", "Edmonton", "Calgary", "Colorado", "Anaheim", "Los Angeles", "Dallas", "San Jose", "Arizona", "Winnipeg", "Carolina", "Washington", "Tampa Bay", "Florida"]
+	
+team_dicts = {
+	'Avalanche': {
+		'Abbr': 'COL',
+        'Arena': 'Pepsi Center',
+        'ArenaPlace': 'Denver, CO, USA',
+        'City': u'Colorado',
+		'LineupURL': "20/colorado-avalanche",
+        'Long': 'Colorado Avalanche',
+        'NHL': 'Colorado',
+        'Name': 'Avalanche',
+        'Subreddit': '/r/coloradoavalanche',
+        'TSN': 'Colorado',
+        'TimeZone': 'MT'},
+	'Blackhawks': {
+		'Abbr': 'CHI',
+        'Arena': 'United Center',
+        'ArenaPlace': 'Chicago, IL, USA',
+        'City': u'Chicago',
+		'LineupURL': "19/chicago-blackhawks",
+        'Long': 'Chicago Blackhawks',
+        'NHL': 'Chicago',
+        'Name': 'Blackhawks',
+        'Subreddit': '/r/hawks',
+        'TSN': 'Chicago',
+        'TimeZone': 'CT'},
+	'BlueJackets': {
+		'Abbr': 'CBJ',
+        'Arena': 'Nationwide Arena',
+        'ArenaPlace': 'Columbus, OH, USA',
+        'City': u'Columbus',
+		'LineupURL': "21/columbus-blue-jackets",
+        'Long': 'Columbus Blue Jackets',
+        'NHL': 'Columbus',
+        'Name': 'BlueJackets',
+        'Subreddit': '/r/bluejackets',
+        'TSN': 'Columbus',
+        'TimeZone': 'ET'},
+	'Blues': {
+		'Abbr': 'STL',
+        'Arena': 'Scottrade Center',
+        'ArenaPlace': 'St Louis, MO, USA',
+        'City': u'St. Louis',
+		'LineupURL' : "38/st-louis-blues",
+        'Long': 'St. Louis Blues',
+        'NHL': 'St Louis',
+        'Name': 'Blues',
+        'Subreddit': '/r/stlouisblues',
+        'TSN': 'St. Louis',
+        'TimeZone': 'CT'},
+	'Bruins': {
+		'Abbr': 'BOS',
+        'Arena': 'TD Garden',
+        'ArenaPlace': 'Boston, MA, USA',
+        'City': u'Boston',
+		'LineupURL': "15/boston-bruins/",
+        'Long': 'Boston Bruins',
+        'NHL': 'Boston',
+        'Name': 'Bruins',
+        'Subreddit': '/r/bostonbruins',
+        'TSN': 'Boston',
+        'TimeZone': 'ET'},
+	'Canadiens': {
+		'Abbr': 'MTL',
+        'Arena': 'Bell Centre',
+        'ArenaPlace': 'Montreal, QC, CAN',
+        'City': u'Montr\xc3\xa9al',
+		'LineupURL': "28/montreal-canadiens",
+        'Long': 'Montreal Canadiens',
+        'NHL': 'Montreal',
+        'Name': 'Canadiens',
+        'Subreddit': '/r/habs',
+        'TSN': 'Montreal',
+        'TimeZone': 'ET'},
+	'Canucks': {
+		'Abbr': 'VAN',
+        'Arena': 'Rogers Arena',
+        'ArenaPlace': 'Vancouver, BC, CAN',
+        'City': u'Vancouver',
+		'LineupURL': "41/vancouver-canucks",
+        'Long': 'Vancouver Canucks',
+        'NHL': 'Vancouver',
+        'Name': 'Canucks',
+        'Subreddit': '/r/canucks',
+        'TSN': 'Vancouver',
+        'TimeZone': 'PT'},
+	'Capitals': {
+		'Abbr': 'WSH',
+        'Arena': 'Verizon Center',
+        'ArenaPlace': 'Washington, DC, USA',
+        'City': u'Washington',
+		'LineupURL': "42/washington-capitals",
+        'Long': 'Washington Capitals',
+        'NHL': 'Washington',
+        'Name': 'Capitals',
+        'Subreddit': '/r/caps',
+        'TSN': 'Washington',
+        'TimeZone': 'ET'},
+	'Coyotes': {
+		'Abbr': 'ARI',
+        'Arena': 'Gila River Arena',
+        'ArenaPlace': 'Glendale, AZ, USA',
+        'City': u'Arizona',
+		'LineupURL': "35/arizona-coyotes",
+        'Long': 'Arizona Coyotes',
+        'NHL': 'Arizona',
+        'Name': 'Coyotes',
+        'Subreddit': '/r/coyotes',
+        'TSN': 'Arizona',
+        'TimeZone': 'MT'},
+	'Devils': {
+		'Abbr': 'NJD',
+        'Arena': 'Prudential Center',
+        'ArenaPlace': 'Newark, NJ, USA',
+        'City': u'New Jersey',
+		'LineupURL' : "30/new-jersey-devils",
+        'Long': 'New Jersey Devils',
+        'NHL': 'New Jersey',
+        'Name': 'Devils',
+        'Subreddit': '/r/devils',
+        'TSN': 'New Jersey',
+        'TimeZone': 'ET'},
+	'Ducks': {
+		'Abbr': 'ANA',
+        'Arena': 'Honda Center',
+        'ArenaPlace': 'Anaheim, CA, USA',
+        'City': u'Anaheim',
+		'LineupURL': "13/anaheim-ducks/",
+        'Long': 'Anaheim Ducks',
+        'NHL': 'Anaheim',
+        'Name': 'Ducks',
+        'Subreddit': '/r/anaheimducks',
+        'TSN': 'Anaheim',
+        'TimeZone': 'PT'},
+	'Flames': {
+		'Abbr': 'CGY',
+        'Arena': 'Scotiabank Saddledome',
+        'ArenaPlace': 'Calgary, AB, CAN',
+        'City': u'Calgary',
+		'LineupURL': "17/calgary-flames",
+        'Long': 'Calgary Flames',
+        'NHL': 'Calgary',
+        'Name': 'Flames',
+        'Subreddit': '/r/calgaryflames',
+        'TSN': 'Calgary',
+        'TimeZone': 'MT'},
+	'Flyers': {
+		'Abbr': 'PHI',
+        'Arena': 'Wells Fargo Center',
+        'ArenaPlace': 'Philadelphia, PA, USA',
+        'City': u'Philadelphia',
+		'LineupURL': "34/philadelphia-flyers",
+        'Long': 'Philadelphia Flyers',
+        'NHL': 'Philadelphia',
+        'Name': 'Flyers',
+        'Subreddit': '/r/flyers',
+        'TSN': 'Philadelphia',
+        'TimeZone': 'ET'},
+	'Hurricanes': {
+		'Abbr': 'CAR',
+        'Arena': 'PNC Arena',
+        'ArenaPlace': 'Raleigh, NC, USA',
+        'City': u'Carolina',
+		'LineupURL': "18/carolina-hurricanes",
+        'Long': 'Carolina Hurricanes',
+        'NHL': 'Carolina',
+        'Name': 'Hurricanes',
+        'Subreddit': '/r/canes',
+        'TSN': 'Carolina',
+        'TimeZone': 'ET'},
+	'Islanders': {
+		'Abbr': 'NYI',
+        'Arena': 'Nassau Veterans Memorial Coliseum',
+        'ArenaPlace': 'Long Island, NY, USA',
+        'City': u'NY Islanders',
+		'LineupURL': "31/new-york-islanders",
+        'Long': 'New York Islanders',
+        'NHL': 'NY Islanders',
+        'Name': 'Islanders',
+        'Subreddit': '/r/newyorkislanders',
+        'TSN': 'NY Islanders',
+        'TimeZone': 'ET'},
+	'Jets': {
+		'Abbr': 'WPG',
+        'Arena': 'MTS Centre',
+        'ArenaPlace': 'Winnipeg, MB, CAN',
+        'City': u'Winnipeg',
+		'LineupURL': "14/winnipeg-jets",
+        'Long': 'Winnipeg Jets',
+        'NHL': 'Winnipeg',
+        'Name': 'Jets',
+        'Subreddit': '/r/winnipegjets',
+        'TSN': 'Winnipeg',
+        'TimeZone': 'CT'},
+	'Kings': {
+		'Abbr': 'LAK',
+        'Arena': 'Staples Center',
+        'ArenaPlace': 'Los Angeles, CA, USA',
+        'City': u'Los Angeles',
+		'LineupURL': "26/los-angeles-kings",
+        'Long': 'Los Angeles Kings',
+        'NHL': 'Los Angeles',
+        'Name': 'Kings',
+        'Subreddit': '/r/losangeleskings',
+        'TSN': 'Los Angeles',
+        'TimeZone': 'PT'},
+	'Lightning': {
+		'Abbr': 'TBL',
+        'Arena': 'Amalie Arena',
+        'ArenaPlace': 'Tampa, FL, USA',
+        'City': u'Tampa Bay',
+		'LineupURL': "39/tampa-bay-lightning",
+        'Long': 'Tampa Bay Lightning',
+        'NHL': 'Tampa Bay',
+        'Name': 'Lightning',
+        'Subreddit': '/r/tampabaylightning',
+        'TSN': 'Tampa Bay',
+        'TimeZone': 'ET'},
+	'MapleLeafs': {
+		'Abbr': 'TOR',
+        'Arena': 'Air Canada Centre',
+        'ArenaPlace': 'Toronto, ON, CAN',
+        'City': u'Toronto',
+		'LineupURL': "40/toronto-maple-leafs",
+        'Long': 'Toronto Maple Leafs',
+        'NHL': 'Toronto',
+        'Name': 'MapleLeafs',
+        'Subreddit': '/r/leafs',
+        'TSN': 'Toronto',
+        'TimeZone': 'ET'},
+	'Oilers': {
+		'Abbr': 'EDM',
+        'Arena': 'Rexall Place',
+        'ArenaPlace': 'Edmonton, AB, CAN',
+        'City': u'Edmonton',
+		'LineupURL': "24/edmonton-oilers",
+        'Long': 'Edmonton Oilers',
+        'NHL': 'Edmonton',
+        'Name': 'Oilers',
+        'Subreddit': '/r/edmontonoilers',
+        'TSN': 'Edmonton',
+        'TimeZone': 'MT'},
+	'Panthers': {
+		'Abbr': 'FLA',
+        'Arena': 'BB&T Center',
+        'ArenaPlace': 'Sunrise, FL, USA',
+        'City': u'Florida',
+		'LineupURL': "25/florida-panthers",
+        'Long': 'Florida Panthers',
+        'NHL': 'Florida',
+        'Name': 'Panthers',
+        'Subreddit': '/r/floridapanthers',
+        'TSN': 'Florida',
+        'TimeZone': 'ET'},
+	'Penguins': {
+		'Abbr': 'PIT',
+        'Arena': 'Consol Energy Center',
+        'ArenaPlace': 'Pittsburgh, PA, USA',
+        'City': u'Pittsburgh',
+        'Long': 'Pittsburgh Penguins',
+		'LineupURL' : "36/pittsburgh-penguins", 
+        'NHL': 'Pittsburgh',
+        'Name': 'Penguins',
+        'Subreddit': '/r/penguins',
+        'TSN': 'Pittsburgh',
+        'TimeZone': 'ET'},
+	'Predators': {
+		'Abbr': 'NSH',
+        'Arena': 'Bridgestone Arena',
+        'ArenaPlace': 'Nashville, TN, USA',
+        'City': u'Nashville',
+		'LineupURL': "29/nashville-predators",
+        'Long': 'Nashville Predators',
+        'NHL': 'Nashville',
+        'Name': 'Predators',
+        'Subreddit': '/r/predators',
+        'TSN': 'Nashville',
+        'TimeZone': 'CT'},
+	'Rangers': {
+		'Abbr': 'NYR',
+        'Arena': 'Madison Square Garden',
+        'ArenaPlace': 'New York, NY, USA',
+        'City': u'NY Rangers',
+		'LineupURL': "32/new-york-rangers",
+        'Long': 'New York Rangers',
+        'NHL': 'NY Rangers',
+        'Name': 'Rangers',
+        'Subreddit': '/r/rangers',
+        'TSN': 'NY Rangers',
+        'TimeZone': 'ET'},
+	'RedWings': {
+		'Abbr': 'DET',
+        'Arena': 'Joe Louis Arena',
+        'ArenaPlace': 'Detroit, MI, USA',
+        'City': u'Detroit',
+		'LineupURL' : "23/detroit-red-wings",
+        'Long': 'Detroit Red Wings',
+        'NHL': 'Detroit',
+        'Name': 'RedWings',
+        'Subreddit': '/r/detroitredwings',
+        'TSN': 'Detroit',
+        'TimeZone': 'ET'},
+	'Sabres': {
+		'Abbr': 'BUF',
+        'Arena': 'First Niagara Center',
+        'ArenaPlace': 'Buffalo, NY, USA',
+        'City': u'Buffalo',
+		'LineupURL': "16/buffalo-sabres/",
+        'Long': 'Buffalo Sabres',
+        'NHL': 'Buffalo',
+        'Name': 'Sabres',
+        'Subreddit': '/r/sabres',
+        'TSN': 'Buffalo',
+        'TimeZone': 'ET'},
+	'Senators': {
+		'Abbr': 'OTT',
+        'Arena': 'Canadian Tire Centre',
+        'ArenaPlace': 'Ottawa, ON, CAN',
+        'City': u'Ottawa',
+		'LineupURL': "33/ottawa-senators",
+        'Long': 'Ottawa Senators',
+        'NHL': 'Ottawa',
+        'Name': 'Senators',
+        'Subreddit': '/r/ottawasenators',
+        'TSN': 'Ottawa',
+        'TimeZone': 'ET'},
+	'Sharks': {
+		'Abbr': 'SJS',
+        'Arena': 'SAP Center',
+        'ArenaPlace': 'San Jose, CA, USA',
+        'City': u'San Jose',
+		'LineupURL': "37/san-jose-sharks",
+        'Long': 'San Jose Sharks',
+        'NHL': 'San Jose',
+        'Name': 'Sharks',
+        'Subreddit': '/r/sanjosesharks',
+        'TSN': 'San Jose',
+        'TimeZone': 'PT'},
+	'Stars': {
+		'Abbr': 'DAL',
+        'Arena': 'American Airlines Center',
+        'ArenaPlace': 'Dallas, TX, USA',
+        'City': u'Dallas',
+		'LineupURL': "22/dallas-stars", 
+        'Long': 'Dallas Stars',
+        'NHL': 'Dallas',
+        'Name': 'Stars',
+        'Subreddit': '/r/dallasstars',
+        'TSN': 'Dallas',
+        'TimeZone': 'CT'},
+	'Wild': {
+		'Abbr': 'MIN',
+        'Arena': 'Xcel Energy Center',
+        'ArenaPlace': 'St Paul, MN, USA',
+        'City': u'Minnesota',
+		'LineupURL': "27/minnesota-wild",
+        'Long': 'Minnesota Wild',
+        'NHL': 'Minnesota',
+        'Name': 'Wild',
+        'Subreddit': '/r/wildhockey',
+        'TSN': 'Minnesota',
+        'TimeZone': 'CT'}}
 
 
 ## --------------------------------------------------------------------------------------
@@ -65,75 +493,7 @@ GT_Settings = {}
 lineups_forwards = {}
 lineups_defense = {}
 lineups_goalies = {}
-by_city = {}
-by_abbr = {}
-by_nhl = {}
-by_tsn = {}
-by_team = {}
 
-## --------------------------------------------------------------------------------------
-## Global Functions
-## --------------------------------------------------------------------------------------
-
-def build_arrays():
-
-    for x in range(0,30):
-        by_city[TeamCities[x]] = {
-            "name"      : TeamNames[x],
-            "long"      : TeamLong[x],
-            "arena"     : TeamArenas[x],
-            "location"  : TeamArenaPlace[x],
-            "abbr"      : TeamNamesAbbr[x],
-            "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x],
-            "lineup"    : TeamLineUpURL[x]
-            }
-
-        by_team[TeamNames[x]] = {
-            "city"      : TeamCities[x],
-            "long"      : TeamLong[x],
-            "arena"     : TeamArenas[x],
-            "location"  : TeamArenaPlace[x],
-            "abbr"      : TeamNamesAbbr[x],
-            "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x],
-            "lineup"    : TeamLineUpURL[x]
-            }
-
-        by_abbr[TeamNamesAbbr[x]] = {
-            "city"      : TeamCities[x],
-            "name"      : TeamNames[x],
-            "long"      : TeamLong[x],
-            "arena"     : TeamArenas[x],
-            "location"  : TeamArenaPlace[x],
-            "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x],
-            "lineup"    : TeamLineUpURL[x]
-            }
-
-        by_nhl[TeamNHL[x]] = {
-            "city"      : TeamCities[x],
-            "name"      : TeamNames[x],
-            "long"      : TeamLong[x],
-            "abbr"      : TeamNamesAbbr[x],
-            "arena"     : TeamArenas[x],
-            "location"  : TeamArenaPlace[x],
-            "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x],
-            "lineup"    : TeamLineUpURL[x]
-            }
-
-        by_tsn[TeamTSN[x]] = {
-            "city"      : TeamCities[x],
-            "name"      : TeamNames[x],
-            "long"      : TeamLong[x],
-            "abbr"      : TeamNamesAbbr[x],
-            "arena"     : TeamArenas[x],
-            "location"  : TeamArenaPlace[x],
-            "reddit"    : TeamReddits[x],
-            "tz"        : TeamTimeZone[x],
-            "lineup"    : TeamLineUpURL[x]
-            }
 
 ## --------------------------------------------------------------------------------------
 ## Get Team Schedule
@@ -326,7 +686,7 @@ def get_team_lines(team_name):
             page = cache_file.read()
     else:
         print "Downloading players for " + team_name + "...\r"
-        w = urllib2.urlopen(TeamLineUpBaseURL + by_team[team_name]['lineup'])
+        w = urllib2.urlopen(TeamLineUpBaseURL + team_dicts[team_name]['LineupURL'])
         page = w.read()
         w.close()
 
@@ -442,12 +802,14 @@ def build_game_thread():
 ## --------------------------------------------------------------------------------------
 
 def build_table():
-    for city in by_city:
+    for team in team_dicts:
         print "\r\n|Field|Data|"
         print ":--:|:--:"
-        print "|City|" + city + "|"
-        for item in by_city[city]:
-            print "|" + item + "|" + by_city[city][item] + "|"
+        print "|City|" + team['TeamCities'] + "|"
+        for k,v in team.iter_items():
+            print k
+            if k is not 'TeamCities':
+                print "|" + k + "|" + v + "|"
 
 
 print "GameTimePy v1.0.14.1\r"
@@ -469,7 +831,6 @@ if not os.path.exists(cache_directory):
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)
     
-build_arrays()
 # check_filedates()
 get_team_stats()
 get_today_schedule()
