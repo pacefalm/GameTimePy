@@ -142,18 +142,17 @@ def get_team_schedule(team_name):
     schedule_file = cache_directory + "\\" + team_name + "-schedule.html"
     if os.path.exists(schedule_file):
         print "Reading cached team file for " + team_name + "...\r"
-        cache_file = open(schedule_file, "r")
-        page = cache_file.read()
-        cache_file.close()
+        with open(schedule_file, "r") as cache_file:
+            page = cache_file.read()
+
     else:
         print "Downloading schedule for " + team_name + "...\r"
         w = urllib2.urlopen('http://{}.nhl.com/club/schedule.htm'.format(team_name.lower()))
         page = w.read()
         w.close()
 
-        cache_file = open(schedule_file, "w")
-        cache_file.write(page)
-        cache_file.close()
+        with open(schedule_file, "w") as cache_file:
+            cache_file.write(page)
 
     soup = BeautifulSoup(page)
 
@@ -176,18 +175,17 @@ def get_team_schedule(team_name):
 def get_team_injuries():
     if os.path.exists(InjuriesFile):
         print "Reading cached injury data...\r"
-        cache_file = open(InjuriesFile, "r")
-        page = cache_file.read()
-        cache_file.close()
+        with open(InjuriesFile, "r") as cache_file:
+            page = cache_file.read()
+
     else:
         print "Downloading injuries data...\r"
         w = urllib2.urlopen(InjuryURL)
         page = w.read()
         w.close()
 
-        cache_file = open(InjuriesFile, "w")
-        cache_file.write(page)
-        cache_file.close()
+        with open(InjuriesFile, "w") as cache_file:
+            cache_file.write(page)
 
     soup = BeautifulSoup(page)
 
@@ -211,18 +209,17 @@ def get_team_injuries():
 def get_team_stats():
     if os.path.exists(StandingsFile):
         print "Reading cached standings...\r"
-        cache_file = open(StandingsFile, "r")
-        page = cache_file.read()
-        cache_file.close()
+        with open(StandingsFile, "r") as cache_file:
+            page = cache_file.read()
+
     else:
         print "Downloading league standings...\r"
         w = urllib2.urlopen("http://www.nhl.com/ice/teamstats.htm?fetchKey=20142ALLSAAAll&sort=points&viewName=summary")
         page = w.read()
         w.close()
 
-        cache_file = open(StandingsFile, "w")
-        cache_file.write(page)
-        cache_file.close()
+        with open(StandingsFile, "w") as cache_file:
+            cache_file.write(page)
 
     soup = BeautifulSoup(page)
 
@@ -239,18 +236,17 @@ def get_team_players(team_name):
     players_file = cache_directory + "\\" + team_name + "-players.html"
     if os.path.exists(players_file):
         print "Reading cached team file for " + team_name + "...\r"
-        cache_file = open(players_file, "r")
-        page = cache_file.read()
-        cache_file.close()
+        with open(players_file, "r") as cache_file:
+            page = cache_file.read()
+
     else:
         print "Downloading players for " + team_name + "...\r"
         w = urllib2.urlopen('http://{}.nhl.com/club/stats.htm'.format(team_name.lower()))
         page = w.read()
         w.close()
 
-        cache_file = open(players_file, "w")
-        cache_file.write(page)
-        cache_file.close()
+        with open(players_file, "w") as cache_file:
+            cache_file.write(page)
 
     soup = BeautifulSoup(page)
 
@@ -277,18 +273,17 @@ def get_today_schedule():
 
     if os.path.exists(ScheduleFile):
         print "Reading cached schedule...\r"
-        cache_file = open(ScheduleFile, "r")
-        page = cache_file.read()
-        cache_file.close()
+        with open(ScheduleFile, "r") as cache_file:
+            page = cache_file.read()
+        
     else:
         print "Downloading today's schedule...\r"
         w = urllib2.urlopen('http://www.nhl.com/ice/schedulebyday.htm?date=' + datetime.now().strftime("%m/%d/%Y"))
         page = w.read()
         w.close()
 
-        cache_file = open(ScheduleFile, "w")
-        cache_file.write(page)
-        cache_file.close()
+        with open(ScheduleFile, "w") as cache_file:
+            cache_file.write(page)
 
     soup = BeautifulSoup(page)
     today_games = []
@@ -321,24 +316,22 @@ def get_today_schedule():
                                     })
 
 ## --------------------------------------------------------------------------------------
-## Check file dates
+## Check team lines
 ## --------------------------------------------------------------------------------------
 def get_team_lines(team_name):
     lines_file = cache_directory + "\\" + team_name + "-lines.html"
     if os.path.exists(lines_file):
         print "Reading cached team file for " + team_name + "...\r"
-        cache_file = open(lines_file, "r")
-        page = cache_file.read()
-        cache_file.close()
+        with open(lines_file, "r") as cache_file:
+            page = cache_file.read()
     else:
         print "Downloading players for " + team_name + "...\r"
         w = urllib2.urlopen(TeamLineUpBaseURL + by_team[team_name]['lineup'])
         page = w.read()
         w.close()
 
-        cache_file = open(lines_file, "w")
-        cache_file.write(page)
-        cache_file.close()
+        with open(lines_file, "w") as cache_file:
+            cache_file.write(page)
 
     soup = BeautifulSoup(page)
 
@@ -484,8 +477,8 @@ get_today_schedule()
 print "\r\n"
 print "Select template file to use:"
 TemplateFiles = ListFiles(this_directory,'txt')
-for file in range(len(TemplateFiles)):
-    print "[%d] %s" % (file,TemplateFiles[file])
+for idx, _file in enumerate(TemplateFiles):
+    print "[%d] %s" % (idx, _file)
 template_num = int(raw_input("> "))
 if template_num <= len(TemplateFiles):
     print "Using %s for game thread." % (TemplateFiles[template_num])
