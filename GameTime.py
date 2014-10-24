@@ -428,6 +428,7 @@ lineups_goalies = {}
 ## Get Team Schedule
 ## --------------------------------------------------------------------------------------
 def get_team_schedule(team_name):
+    print 'here'
     schedule_file = cache_directory + "\\" + team_name + "-schedule.html"
     if os.path.exists(schedule_file):
         print "Reading cached team file for " + team_name + "...\r"
